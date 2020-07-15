@@ -70,7 +70,6 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-
     /**
      *
      * @return - возращает имя пользователя бота

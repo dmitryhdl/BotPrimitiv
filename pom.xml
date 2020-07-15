@@ -8,5 +8,11 @@
     <artifactId>BotPrimitiv</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>4.9</version>
+        </dependency>
+    </dependencies>
 </project>

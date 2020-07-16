@@ -1,5 +1,6 @@
 package JavaBotMessenger.JavaBotTelegram;
 
+import JavaBotBrain.JavaBrain;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -10,6 +11,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -27,8 +31,7 @@ public class Bot extends TelegramLongPollingBot {
 
     /**
      * Метод отправляет сообщения по типу send(строка) пользователю
-     * @param message
-     * @param text
+
      */
     private void sendMsg(Message message, String text) {
         SendMessage sendMessage = new SendMessage();
@@ -37,14 +40,14 @@ public class Bot extends TelegramLongPollingBot {
         sendMessage.setReplyToMessageId(message.getMessageId());
         sendMessage.setText(text);
         try {
-            sendMessge(sendMessage);
+            sendMessger(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
 
     }
 
-   public final Message sendMessge(SendMessage sendMessage) throws TelegramApiException {
+   public final Message sendMessger(SendMessage sendMessage) throws TelegramApiException {
         if (sendMessage == null){
             throw new TelegramApiRequestException("null");
 
@@ -60,19 +63,55 @@ public class Bot extends TelegramLongPollingBot {
      * @param update
      */
     public void onUpdateReceived(Update update) {
-
+        Random rnd = new Random();
+        JavaBrain brain = new JavaBrain();
         Message msg = update.getMessage();
         String txt = msg.getText();
-        if (txt.equals("/start")) {
-            sendMsg(msg, "Привет друг");
-        }else {
-            sendMsg(msg,"Красава");
+
+        /**
+         * Возращает количество элементов коллекции
+          */
+        int keys = brain.getAnsAnaliz().size();
+
+
+        /**
+         * Убирает лишние пробелы и знаки припенания
+         */
+        String mes = String.join(" ", txt.split("[ {,!.}]+"));
+        System.out.println(mes);
+
+        for (Map.Entry<String, String> param : brain.getAnsAnaliz().entrySet()) {
+
+            /**
+             * Pattern — это конструктор регулярных выражений.
+             * Под «капотом» метод compile вызывает закрытый конструктор класса Pattern для создания скомпилированного представления.
+             * Такой способ создания экземпляра шаблона реализован с целью создания его в виде неизменяемого объекта.
+             */
+            Pattern pattern = Pattern.compile(param.getKey());
+
+            /**
+             *  Matcher – это «поисковик», «движок» регулярных выражений.
+             *  Matcher представляет собой класс, из которого создается объект для поиска совпадений по шаблону.
+             *  Для поиска ему надо дать две вещи: шаблон поиска и «адрес», по которому искать.
+             */
+            Matcher matcher = pattern.matcher(mes);
+
+            /**
+             * Метод find() ищет очередное совпадение в тексте с шаблоном.
+             */
+
+
+            if (matcher.find()) {
+                int vrt = rnd.nextInt(keys);
+
+                sendMsg(msg, brain.getAnswer().get(param.getValue()));
+            }
         }
     }
 
     /**
      *
-     * @return - возращает имя пользователя бота
+     * возращает имя пользователя бота
      */
     public String getBotUsername() {
         return "dmitryhdlBot";
@@ -80,7 +119,7 @@ public class Bot extends TelegramLongPollingBot {
 
     /**
      *
-     * @return - возращает токен бота
+     * возращает токен бота
      */
     public String getBotToken() {
         return "1230210035:AAEIlol7TWso0aS094h7CXQoVM2U7n5mVKg";
